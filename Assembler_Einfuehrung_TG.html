@@ -1,0 +1,1270 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Assembler Einstieg fuer TG-Schueler</title>
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --panel: #ffffff;
+      --ink: #1f252d;
+      --muted: #5d6876;
+      --line: #d7dde5;
+      --green: #18a058;
+      --green-soft: #e7f7ee;
+      --red: #d83b3b;
+      --amber: #f2a51a;
+      --cyan: #237ca7;
+      --code-bg: #161b22;
+      --code-ink: #e8edf3;
+      --focus: #286bd6;
+      --shadow: 0 14px 35px rgba(31, 37, 45, 0.08);
+      font-family: "Segoe UI", Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.45;
+    }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 290px 1fr;
+    }
+
+    aside {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 22px 18px;
+      background: #26313f;
+      color: #f8fafc;
+      overflow: auto;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .chip {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      background:
+        linear-gradient(90deg, transparent 0 7px, #334155 7px 10px, transparent 10px 100%),
+        linear-gradient(0deg, transparent 0 7px, #334155 7px 10px, transparent 10px 100%),
+        #f2a51a;
+      border: 3px solid #f8fafc;
+      border-radius: 6px;
+      color: #111827;
+      font-weight: 800;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 21px;
+      line-height: 1.15;
+    }
+
+    .brand p {
+      margin: 3px 0 0;
+      color: #cbd5e1;
+      font-size: 13px;
+    }
+
+    nav {
+      display: grid;
+      gap: 8px;
+    }
+
+    .nav-button {
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 7px;
+      background: rgba(255, 255, 255, 0.06);
+      color: #f8fafc;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .nav-button.active {
+      background: #f8fafc;
+      color: #1f252d;
+      border-color: #f8fafc;
+    }
+
+    .progress {
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(255, 255, 255, 0.14);
+    }
+
+    .progress-bar {
+      height: 10px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.16);
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 16%;
+      background: var(--green);
+      transition: width 200ms ease;
+    }
+
+    main {
+      padding: 26px;
+      max-width: 1240px;
+      width: 100%;
+    }
+
+    .site-assets {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .site-assets img {
+      display: block;
+      object-fit: contain;
+    }
+
+    .site-assets .logo {
+      max-width: 180px;
+      max-height: 62px;
+    }
+
+    .site-assets .qr {
+      width: 72px;
+      height: 72px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      padding: 5px;
+    }
+
+    .impressum-link {
+      display: inline-flex;
+      align-items: center;
+      min-height: 36px;
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #fff;
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .topline {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .topline h2 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.15;
+    }
+
+    .topline p {
+      margin: 6px 0 0;
+      color: var(--muted);
+    }
+
+    .lesson {
+      display: none;
+    }
+
+    .lesson.active {
+      display: block;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 16px;
+    }
+
+    .panel {
+      grid-column: span 6;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+
+    .panel.full {
+      grid-column: 1 / -1;
+    }
+
+    .panel.third {
+      grid-column: span 4;
+    }
+
+    .panel h3 {
+      margin: 0 0 10px;
+      font-size: 19px;
+    }
+
+    .panel p {
+      margin-top: 0;
+      color: var(--muted);
+    }
+
+    .callout {
+      padding: 12px 14px;
+      border-left: 5px solid var(--cyan);
+      background: #eaf5fb;
+      border-radius: 4px;
+      color: #243241;
+    }
+
+    .machine {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      align-items: stretch;
+      margin-top: 14px;
+    }
+
+    .machine-box {
+      padding: 14px;
+      border: 2px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfe;
+      min-height: 96px;
+    }
+
+    .machine-box strong {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .wire {
+      height: 2px;
+      background: var(--cyan);
+      align-self: center;
+      grid-column: 1 / -1;
+      opacity: 0.35;
+    }
+
+    .registers {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(72px, 1fr));
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .register {
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 10px;
+      background: #fbfcfe;
+    }
+
+    .register span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    .register output {
+      display: block;
+      margin-top: 4px;
+      font: 700 20px Consolas, monospace;
+    }
+
+    .led-row {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 8px;
+      margin: 12px 0;
+      max-width: 430px;
+    }
+
+    .led {
+      aspect-ratio: 1;
+      border-radius: 50%;
+      border: 2px solid #7b8794;
+      background: #edf1f5;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15);
+    }
+
+    .led.on {
+      background: #1cf31c;
+      border-color: #13a413;
+      box-shadow: 0 0 13px rgba(28, 243, 28, 0.7), inset 0 2px 4px rgba(255, 255, 255, 0.35);
+    }
+
+    .bits {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 8px;
+      max-width: 430px;
+      color: var(--muted);
+      font: 12px Consolas, monospace;
+      text-align: center;
+    }
+
+    .code {
+      margin: 0;
+      padding: 14px;
+      border-radius: 7px;
+      background: var(--code-bg);
+      color: var(--code-ink);
+      overflow: auto;
+      font: 14px/1.5 Consolas, "Courier New", monospace;
+      white-space: pre;
+    }
+
+    .code .active-line {
+      display: block;
+      margin: 0 -14px;
+      padding: 0 14px;
+      background: rgba(242, 165, 26, 0.22);
+      color: #fff8d8;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin: 14px 0;
+    }
+
+    .button {
+      min-height: 40px;
+      border: 1px solid #b9c2ce;
+      border-radius: 7px;
+      background: #ffffff;
+      color: var(--ink);
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+
+    .button.primary {
+      background: var(--green);
+      border-color: var(--green);
+      color: white;
+      font-weight: 700;
+    }
+
+    .button.warn {
+      background: #fff4db;
+      border-color: #f2c56c;
+    }
+
+    .button:focus-visible,
+    .nav-button:focus-visible,
+    input:focus-visible,
+    select:focus-visible {
+      outline: 3px solid rgba(40, 107, 214, 0.35);
+      outline-offset: 2px;
+    }
+
+    .converter {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 10px 14px;
+      align-items: center;
+      margin-top: 12px;
+    }
+
+    .converter input,
+    .converter select {
+      min-height: 40px;
+      border: 1px solid #b9c2ce;
+      border-radius: 7px;
+      padding: 8px 10px;
+      background: #fff;
+    }
+
+    .answer {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 7px;
+      background: #f6f8fb;
+      border: 1px solid var(--line);
+      min-height: 44px;
+    }
+
+    .quiz-option {
+      display: block;
+      width: 100%;
+      margin-top: 8px;
+      text-align: left;
+    }
+
+    .status-ok {
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    .status-bad {
+      color: var(--red);
+      font-weight: 700;
+    }
+
+    .sample-layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 16px;
+    }
+
+    .sample-list {
+      display: grid;
+      gap: 8px;
+      align-content: start;
+    }
+
+    .sample-list button {
+      text-align: left;
+    }
+
+    .mini-task {
+      border-top: 1px solid var(--line);
+      margin-top: 14px;
+      padding-top: 14px;
+    }
+
+    .choice-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .command-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .command-card {
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 10px 12px;
+      background: #fbfcfe;
+    }
+
+    .command-card code {
+      display: block;
+      margin-bottom: 5px;
+      color: #0f5e8f;
+      font: 700 14px Consolas, "Courier New", monospace;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 32px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: #eef3f8;
+      color: #2f3b4a;
+      border: 1px solid #d2dbe6;
+      font-size: 13px;
+    }
+
+    .memory {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 6px;
+      margin-top: 12px;
+    }
+
+    .mem-cell {
+      min-height: 42px;
+      padding: 6px;
+      border: 1px solid var(--line);
+      background: #fbfcfe;
+      border-radius: 6px;
+      text-align: center;
+      font: 13px Consolas, monospace;
+    }
+
+    .mem-cell.active {
+      border-color: var(--amber);
+      background: #fff6df;
+    }
+
+    footer {
+      margin-top: 20px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 900px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+
+      aside {
+        position: static;
+        height: auto;
+      }
+
+      nav {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      main {
+        padding: 18px;
+      }
+
+      .panel,
+      .panel.third {
+        grid-column: 1 / -1;
+      }
+
+      .sample-layout,
+      .machine,
+      .command-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .site-assets {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+      }
+    }
+
+    @media (max-width: 560px) {
+      nav {
+        grid-template-columns: 1fr;
+      }
+
+      .registers,
+      .memory {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .converter {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside>
+      <div class="brand">
+        <div class="chip">A</div>
+        <div>
+          <h1>Assembler Einstieg</h1>
+          <p>Vom Java-Denken zur CPU</p>
+        </div>
+      </div>
+      <nav aria-label="Lernstationen">
+        <button class="nav-button active" data-target="start">1. Was ist Assembler?</button>
+        <button class="nav-button" data-target="zahlen">2. Bits, Hex und Ports</button>
+        <button class="nav-button" data-target="befehle">3. Erste Befehle</button>
+        <button class="nav-button" data-target="stepper">4. Schrittweise ausfuehren</button>
+        <button class="nav-button" data-target="speicher">5. Speicher und Tabellen</button>
+        <button class="nav-button" data-target="samples">6. Beispiele lesen</button>
+        <button class="nav-button" data-target="check">7. Check dein Verstaendnis</button>
+      </nav>
+      <div class="progress">
+        <p id="progressText">Fortschritt: 1 von 7</p>
+        <div class="progress-bar" aria-hidden="true">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+    </aside>
+
+    <main>
+      <div class="site-assets" aria-label="Schule und Zugang">
+        <img class="logo" src="FTS_logo.png" alt="FTS Logo">
+        <img class="qr" src="QRCode.png" alt="QR-Code zur Homepage">
+      </div>
+
+      <section class="lesson active" id="start">
+        <div class="topline">
+          <div>
+            <h2>Assembler ist nicht schwer, nur sehr nah an der Maschine</h2>
+            <p>In Java schreibt ihr eher Absichten. In Assembler gebt ihr der CPU sehr kleine Einzelschritte.</p>
+          </div>
+        </div>
+
+        <div class="grid">
+          <article class="panel full">
+            <h3>Die wichtigste Idee</h3>
+            <p>Eine CPU kann nicht direkt verstehen, was ein Array, eine Klasse oder eine Schleife in Java bedeutet. Sie kennt kleine Speicherplaetze, Zahlen und Befehle wie: kopiere, addiere, springe, vergleiche.</p>
+            <div class="machine" aria-label="CPU-Modell">
+              <div class="machine-box">
+                <strong>Register</strong>
+                <span>Kleine Arbeitsfaecher in der CPU: A, R0, R1, R2 ...</span>
+              </div>
+              <div class="machine-box">
+                <strong>Rechenwerk</strong>
+                <span>Fuehrt Befehle aus: INC, ORL, RL, RR, CJNE ...</span>
+              </div>
+              <div class="machine-box">
+                <strong>Ausgaenge</strong>
+                <span>Ports wie P2 steuern LEDs, Anzeige oder andere Bauteile.</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="panel">
+            <h3>Java-Vergleich</h3>
+            <pre class="code">int a = 1;
+a = a + 1;</pre>
+            <p>Java versteckt viele Details: Wo liegt `a`? Welche CPU-Befehle entstehen daraus? Das uebernimmt der Compiler.</p>
+          </article>
+
+          <article class="panel">
+            <h3>Assembler-Vergleich</h3>
+            <pre class="code">MOV A, #1
+INC A</pre>
+            <p>Hier seht ihr die Maschine direkt: Lade den Wert 1 in das Register A. Erhoehe A um 1.</p>
+          </article>
+
+          <article class="panel full">
+            <h3>Merksatz</h3>
+            <div class="callout">Assembler ist eine sehr direkte Sprache fuer Prozessorbefehle. Jeder Befehl veraendert meistens genau ein kleines Stueck Zustand: ein Register, ein Bit, einen Speicherplatz oder den Programmzaehler.</div>
+          </article>
+        </div>
+      </section>
+
+      <section class="lesson" id="zahlen">
+        <div class="topline">
+          <div>
+            <h2>Bits, Hex und Ports</h2>
+            <p>Der Simulator arbeitet oft mit 8 Bit. Ein Byte kann Werte von 0 bis 255 speichern.</p>
+          </div>
+        </div>
+
+        <div class="grid">
+          <article class="panel">
+            <h3>Interaktiver Umrechner</h3>
+            <p>Gib eine Zahl ein und beobachte, welche LEDs an Port P2 leuchten wuerden.</p>
+            <div class="converter">
+              <label for="decimalInput">Dezimal</label>
+              <input id="decimalInput" type="number" min="0" max="255" value="42">
+              <span>Binaer</span>
+              <strong id="binOut">00101010b</strong>
+              <span>Hex</span>
+              <strong id="hexOut">2Ah</strong>
+            </div>
+            <div class="led-row" id="leds"></div>
+            <div class="bits">
+              <span>P2.7</span><span>P2.6</span><span>P2.5</span><span>P2.4</span>
+              <span>P2.3</span><span>P2.2</span><span>P2.1</span><span>P2.0</span>
+            </div>
+          </article>
+
+          <article class="panel">
+            <h3>Schreibweisen</h3>
+            <p>Im Beispielcode findet ihr drei wichtige Schreibweisen:</p>
+            <pre class="code">MOV P2, #255      ; dezimal
+MOV P2, #11111111b ; binaer
+DB 7Eh            ; hexadezimal</pre>
+            <p>Das `#` bedeutet: Es kommt ein direkter Wert. Ohne `#` wird oft der Inhalt eines Registers oder Ports gemeint.</p>
+          </article>
+
+          <article class="panel full">
+            <h3>Mini-Aufgabe</h3>
+            <p>Welche Zahl schaltet nur P2.0 und P2.3 ein?</p>
+            <div class="choice-row">
+              <button class="button quiz-option" data-check="9" data-answer="zahlenMini">9</button>
+              <button class="button quiz-option" data-check="10" data-answer="zahlenMini">10</button>
+              <button class="button quiz-option" data-check="17" data-answer="zahlenMini">17</button>
+            </div>
+            <div class="answer" id="zahlenMini">Tipp: P2.0 ist 1, P2.3 ist 8.</div>
+          </article>
+        </div>
+      </section>
+
+      <section class="lesson" id="befehle">
+        <div class="topline">
+          <div>
+            <h2>Erste Befehle lesen</h2>
+            <p>Ihr muesst am Anfang nicht alle Befehle kennen. Ein kleiner Wortschatz reicht fuer die ersten Programme.</p>
+          </div>
+        </div>
+
+        <div class="grid">
+          <article class="panel third">
+            <h3>MOV</h3>
+            <pre class="code">MOV A, #5
+MOV P2, A</pre>
+            <p>Kopiert Werte. Erst kommt das Ziel, dann die Quelle: `MOV Ziel, Quelle`.</p>
+          </article>
+
+          <article class="panel third">
+            <h3>INC und DJNZ</h3>
+            <pre class="code">INC R4
+DJNZ R0, warte1</pre>
+            <p>`INC` erhoeht um 1. `DJNZ` verringert um 1 und springt, solange das Ergebnis nicht 0 ist.</p>
+          </article>
+
+          <article class="panel third">
+            <h3>Spruenge</h3>
+            <pre class="code">main:
+SJMP main</pre>
+            <p>Labels sind Sprungmarken. `SJMP main` springt zur Marke `main` zurueck.</p>
+          </article>
+
+          <article class="panel">
+            <h3>Bitbefehle</h3>
+            <pre class="code">JB P2.7, rotateright
+JNB P3.2, ende</pre>
+            <p>`JB` springt, wenn ein Bit 1 ist. `JNB` springt, wenn ein Bit 0 ist. Damit werden Schalter und Taster abgefragt.</p>
+          </article>
+
+          <article class="panel">
+            <h3>Unterprogramme</h3>
+            <pre class="code">LCALL wait
+RET</pre>
+            <p>`LCALL` ruft ein Unterprogramm auf. `RET` kehrt wieder zurueck. Das ist entfernt vergleichbar mit einem Methodenaufruf in Java.</p>
+          </article>
+
+          <article class="panel">
+            <h3>Kommentare schreiben</h3>
+            <pre class="code">MOV A, #5       ; A bekommt den Wert 5
+INC A           ; A wird um 1 erhoeht</pre>
+            <p>Alles rechts vom Semikolon `;` ist Kommentar. Der Simulator fuehrt Kommentare nicht aus. Gute Kommentare erklaeren den Zweck einer Zeile, nicht nur den Befehl noch einmal.</p>
+          </article>
+
+          <article class="panel full">
+            <h3>Befehlsuebersicht dieser Einfuehrung</h3>
+            <div class="command-grid">
+              <div class="command-card"><code>MOV Ziel, Quelle</code>Kopiert einen Wert, zum Beispiel `MOV A, #5` oder `MOV P2, A`.</div>
+              <div class="command-card"><code>INC Register</code>Erhoeht einen Wert um 1, zum Beispiel `INC R4`.</div>
+              <div class="command-card"><code>DJNZ Register, label</code>Verringert um 1 und springt, solange das Ergebnis nicht 0 ist.</div>
+              <div class="command-card"><code>SJMP label</code>Springt immer zu einer Marke. `SJMP main` erzeugt oft eine Dauerschleife.</div>
+              <div class="command-card"><code>JB bit, label</code>Springt, wenn das Bit 1 ist. Beispiel: `JB P2.7, rechts`.</div>
+              <div class="command-card"><code>JNB bit, label</code>Springt, wenn das Bit 0 ist. Beispiel: `JNB P3.2, warten`.</div>
+              <div class="command-card"><code>CJNE Wert, Vergleich, label</code>Vergleicht zwei Werte und springt, wenn sie ungleich sind.</div>
+              <div class="command-card"><code>LCALL label</code>Ruft ein Unterprogramm auf.</div>
+              <div class="command-card"><code>RET</code>Beendet ein Unterprogramm und kehrt zurueck.</div>
+              <div class="command-card"><code>RL A / RR A</code>Rotiert die Bits in A nach links oder rechts.</div>
+              <div class="command-card"><code>ORL Ziel, Quelle</code>Verknuepft Bits mit ODER. Ein Bit wird 1, wenn eines der beiden Bits 1 ist.</div>
+              <div class="command-card"><code>DB Werte</code>Legt feste Tabellenwerte im Programmspeicher ab.</div>
+              <div class="command-card"><code>MOVC A, @A+DPTR</code>Liest einen Wert aus einer Tabelle. A ist der Index, DPTR zeigt auf die Tabelle.</div>
+              <div class="command-card"><code>ADD A, Quelle</code>Addiert einen Wert zum Akkumulator A.</div>
+              <div class="command-card"><code>DEC Register</code>Verringert einen Wert um 1.</div>
+              <div class="command-card"><code>DIV AB</code>Teilt A durch B. Das Ergebnis landet in A, der Rest in B.</div>
+              <div class="command-card"><code>SETB bit</code>Setzt ein einzelnes Bit auf 1.</div>
+              <div class="command-card"><code>CLR bit</code>Setzt ein einzelnes Bit auf 0.</div>
+              <div class="command-card"><code>CPL bit</code>Kehrt ein Bit um: aus 1 wird 0, aus 0 wird 1.</div>
+              <div class="command-card"><code>ORG Adresse</code>Legt fest, an welcher Programmadresse die folgenden Befehle stehen. Wichtig bei Interrupts.</div>
+              <div class="command-card"><code>RETI</code>Beendet ein Interrupt-Unterprogramm.</div>
+              <div class="command-card"><code>label:</code>Markiert eine Stelle im Programm, zu der gesprungen werden kann.</div>
+              <div class="command-card"><code>#Wert</code>Direkter Wert. `#5` bedeutet die Zahl 5, nicht den Inhalt von Adresse 5.</div>
+              <div class="command-card"><code>@R0</code>Indirekter Zugriff: Verwende die RAM-Adresse, die in R0 steht.</div>
+              <div class="command-card"><code>;</code>Startet einen Kommentar bis zum Ende der Zeile.</div>
+            </div>
+          </article>
+
+          <article class="panel full">
+            <h3>Interaktive Befehlslupe</h3>
+            <div class="toolbar">
+              <select id="instructionSelect" aria-label="Befehl auswaehlen">
+                <option value="mov">MOV P2, #1</option>
+                <option value="inc">INC R4</option>
+                <option value="djnz">DJNZ R0, warte1</option>
+                <option value="sjmp">SJMP main</option>
+                <option value="jb">JB P2.7, rotateright</option>
+                <option value="jnb">JNB P3.2, ende</option>
+                <option value="rl">RL A</option>
+                <option value="rr">RR A</option>
+                <option value="orl">ORL A, R1</option>
+                <option value="add">ADD A, @R0</option>
+                <option value="dec">DEC R4</option>
+                <option value="div">DIV AB</option>
+                <option value="setb">SETB P2.7</option>
+                <option value="clr">CLR TF0</option>
+                <option value="cpl">CPL EX1</option>
+                <option value="lcall">LCALL wait</option>
+                <option value="ret">RET</option>
+                <option value="org">ORG 000Bh</option>
+                <option value="reti">RETI</option>
+                <option value="cjne">CJNE R4, #16, main</option>
+                <option value="db">DB 7Eh, 00010010b</option>
+                <option value="movc">MOVC A, @A+DPTR</option>
+                <option value="comment">; Kommentar</option>
+              </select>
+            </div>
+            <div class="answer" id="instructionExplain"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="lesson" id="stepper">
+        <div class="topline">
+          <div>
+            <h2>Ein Programm Schritt fuer Schritt</h2>
+            <p>Hier simulieren wir ein sehr kleines Lauflicht: A wird verschoben und danach nach P2 kopiert.</p>
+          </div>
+        </div>
+
+        <div class="grid">
+          <article class="panel">
+            <h3>Programm</h3>
+            <pre class="code" id="stepCode"></pre>
+            <div class="toolbar">
+              <button class="button primary" id="stepBtn">Naechster Schritt</button>
+              <button class="button" id="resetBtn">Zuruecksetzen</button>
+            </div>
+            <div class="answer" id="stepExplain">Starte mit dem ersten Schritt.</div>
+          </article>
+
+          <article class="panel">
+            <h3>Zustand der CPU</h3>
+            <div class="registers">
+              <div class="register"><span>A</span><output id="regA">01h</output></div>
+              <div class="register"><span>P2</span><output id="regP2">00h</output></div>
+              <div class="register"><span>PC</span><output id="regPC">0</output></div>
+              <div class="register"><span>Letzter Befehl</span><output id="lastOp">-</output></div>
+            </div>
+            <div class="led-row" id="stepLeds"></div>
+            <div class="bits">
+              <span>7</span><span>6</span><span>5</span><span>4</span>
+              <span>3</span><span>2</span><span>1</span><span>0</span>
+            </div>
+          </article>
+
+          <article class="panel full">
+            <h3>Was ihr dabei sehen sollt</h3>
+            <p>Das Programm besteht nicht aus einer grossen Anweisung, sondern aus vielen kleinen Veraenderungen. Wenn `A` rotiert wird, passiert an den LEDs noch nichts. Erst `MOV P2, A` schreibt den neuen Wert an den Ausgang.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="lesson" id="speicher">
+        <div class="topline">
+          <div>
+            <h2>Speicher, Register und Tabellen</h2>
+            <p>Register sind schnelle Arbeitsplaetze. RAM und Tabellen sind Speicherbereiche fuer mehrere Werte.</p>
+          </div>
+        </div>
+
+        <div class="grid">
+          <article class="panel">
+            <h3>Direkt, Register, indirekt</h3>
+            <pre class="code">MOV R0, #30h
+MOV A, P1
+MOV @R0, A
+INC R0</pre>
+            <p>`R0` kann als Zeiger benutzt werden. `@R0` bedeutet: Verwende den Speicherplatz, dessen Adresse in R0 steht.</p>
+          </article>
+
+          <article class="panel">
+            <h3>RAM-Spiel</h3>
+            <p>Klicke auf "Speichern": Der Wert von P1 wird an der Adresse gespeichert, auf die R0 zeigt. Danach wandert R0 weiter.</p>
+            <div class="converter">
+              <label for="p1Input">P1-Wert</label>
+              <input id="p1Input" type="number" min="0" max="255" value="12">
+            </div>
+            <div class="toolbar">
+              <button class="button primary" id="storeBtn">Speichern</button>
+              <button class="button" id="memResetBtn">RAM leeren</button>
+            </div>
+            <div class="registers">
+              <div class="register"><span>R0 zeigt auf</span><output id="r0Pointer">30h</output></div>
+            </div>
+            <div class="memory" id="memoryGrid"></div>
+          </article>
+
+          <article class="panel full">
+            <h3>Tabellen mit DB</h3>
+            <pre class="code">tabelle:
+DB 7Eh, 00010010b, 10111100b
+
+MOV DPTR, #tabelle
+MOVC A, @A+DPTR</pre>
+            <p>`DB` legt feste Werte im Programmspeicher ab. Bei der 7-Segment-Anzeige steht dort nicht "die Zahl 2", sondern das Bitmuster, das die passenden Segmente einschaltet.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="lesson" id="samples">
+        <div class="topline">
+          <div>
+            <h2>Beispielprogramme lesen</h2>
+            <p>Diese Ausschnitte stammen aus dem Samples-Ordner. Ziel ist hier noch nicht: alles selbst schreiben. Ziel ist: Orientierung bekommen.</p>
+          </div>
+        </div>
+
+        <div class="grid">
+          <article class="panel full">
+            <div class="sample-layout">
+              <div class="sample-list" id="sampleButtons"></div>
+              <div>
+                <h3 id="sampleTitle">Lauflicht mit Stop</h3>
+                <pre class="code" id="sampleCode"></pre>
+                <div class="answer" id="sampleExplain"></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="panel full">
+            <h3>Lesestrategie fuer Anfaenger</h3>
+            <p><span class="pill">1. Labels suchen</span> <span class="pill">2. MOV-Befehle markieren</span> <span class="pill">3. Spruenge verfolgen</span> <span class="pill">4. Ports erkennen</span></p>
+            <p>Wenn ein Programm lang wirkt: Nicht von oben bis unten "auswendig verstehen". Sucht zuerst die Hauptschleife, dann Unterprogramme wie `warte`, dann Ein- und Ausgaenge wie `P1`, `P2`, `P3.2`.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="lesson" id="check">
+        <div class="topline">
+          <div>
+            <h2>Check dein Verstaendnis</h2>
+            <p>Kurzer Selbsttest. Es geht nicht um Noten, sondern um saubere Begriffe.</p>
+          </div>
+        </div>
+
+        <div class="grid">
+          <article class="panel">
+            <h3>Frage 1</h3>
+            <p>Was bedeutet `MOV A, #5`?</p>
+            <button class="button quiz-option" data-answer="q1" data-check="wrong">Kopiere den Inhalt von Speicheradresse 5 nach A.</button>
+            <button class="button quiz-option" data-answer="q1" data-check="right">Lade den direkten Wert 5 in Register A.</button>
+            <button class="button quiz-option" data-answer="q1" data-check="wrong">Springe fuenf Zeilen weiter.</button>
+            <div class="answer" id="q1"></div>
+          </article>
+
+          <article class="panel">
+            <h3>Frage 2</h3>
+            <p>Wofuer steht `P2` im Simulator meistens?</p>
+            <button class="button quiz-option" data-answer="q2" data-check="wrong">Fuer eine Java-Klasse.</button>
+            <button class="button quiz-option" data-answer="q2" data-check="right">Fuer einen 8-Bit-Port, zum Beispiel fuer LEDs.</button>
+            <button class="button quiz-option" data-answer="q2" data-check="wrong">Fuer einen Kommentar.</button>
+            <div class="answer" id="q2"></div>
+          </article>
+
+          <article class="panel">
+            <h3>Frage 3</h3>
+            <p>Was macht `SJMP main`?</p>
+            <button class="button quiz-option" data-answer="q3" data-check="right">Es springt zur Marke `main`.</button>
+            <button class="button quiz-option" data-answer="q3" data-check="wrong">Es speichert A im RAM.</button>
+            <button class="button quiz-option" data-answer="q3" data-check="wrong">Es beendet das Programm immer.</button>
+            <div class="answer" id="q3"></div>
+          </article>
+
+          <article class="panel">
+            <h3>Frage 4</h3>
+            <p>Was ist ein Label?</p>
+            <button class="button quiz-option" data-answer="q4" data-check="wrong">Ein Register fuer Zahlen von 0 bis 255.</button>
+            <button class="button quiz-option" data-answer="q4" data-check="right">Ein Name fuer eine Stelle im Programm.</button>
+            <button class="button quiz-option" data-answer="q4" data-check="wrong">Ein Bit im Port P2.</button>
+            <div class="answer" id="q4"></div>
+          </article>
+
+          <article class="panel full">
+            <h3>Naechste sinnvolle Schritte</h3>
+            <p>Nach dieser Einfuehrung ist der beste Einstieg ein sehr kleines Programm, das sofort sichtbare Wirkung hat.</p>
+            <pre class="code">MOV P2, #00000001b
+ende:
+SJMP ende</pre>
+            <div class="command-grid">
+              <div class="command-card"><code>1. LED gezielt einschalten</code>Aendere den Wert hinter `#` und beobachte P2. Teste `#1`, `#2`, `#4`, `#8` und `#255`.</div>
+              <div class="command-card"><code>2. Wert in A vorbereiten</code>Schreibe erst `MOV A, #1` und danach `MOV P2, A`. So wird sichtbar, wozu Register dienen.</div>
+              <div class="command-card"><code>3. Bits verschieben</code>Fuege `RL A` oder `RR A` ein und kopiere danach wieder nach P2.</div>
+              <div class="command-card"><code>4. Schleife bauen</code>Nutze ein Label und `SJMP`, damit ein Ablauf wiederholt wird.</div>
+              <div class="command-card"><code>5. Warten verstehen</code>Nutze `DJNZ`, um eine kuenstliche Verzoegerung zu bauen.</div>
+              <div class="command-card"><code>6. Taster abfragen</code>Nutze `JB` oder `JNB`, um auf P3.2 oder P3.3 zu reagieren.</div>
+              <div class="command-card"><code>7. Tabelle lesen</code>Nutze `DB`, `DPTR` und `MOVC`, wenn mehrere feste Ausgabemuster gebraucht werden.</div>
+              <div class="command-card"><code>8. Kommentare ergaenzen</code>Schreibe hinter wichtige Zeilen mit `;`, was der Schritt fuer das Programm bedeutet.</div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <footer><a href="impressum.html">Impressum</a></footer>
+    </main>
+  </div>
+
+  <script>
+    const lessons = Array.from(document.querySelectorAll(".lesson"));
+    const navButtons = Array.from(document.querySelectorAll(".nav-button"));
+    const progressText = document.getElementById("progressText");
+    const progressFill = document.getElementById("progressFill");
+
+    navButtons.forEach((button, index) => {
+      button.addEventListener("click", () => showLesson(button.dataset.target, index));
+    });
+
+    function showLesson(id, index) {
+      lessons.forEach(section => section.classList.toggle("active", section.id === id));
+      navButtons.forEach(button => button.classList.toggle("active", button.dataset.target === id));
+      progressText.textContent = "Fortschritt: " + (index + 1) + " von " + navButtons.length;
+      progressFill.style.width = Math.round(((index + 1) / navButtons.length) * 100) + "%";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function clampByte(value) {
+      value = Number(value);
+      if (!Number.isFinite(value)) return 0;
+      return Math.max(0, Math.min(255, Math.round(value)));
+    }
+
+    function toBin(value) {
+      return clampByte(value).toString(2).padStart(8, "0");
+    }
+
+    function toHex(value) {
+      return clampByte(value).toString(16).toUpperCase().padStart(2, "0") + "h";
+    }
+
+    function buildLeds(container) {
+      container.innerHTML = "";
+      for (let i = 0; i < 8; i++) {
+        const led = document.createElement("div");
+        led.className = "led";
+        container.appendChild(led);
+      }
+    }
+
+    function setLeds(container, value) {
+      const bits = toBin(value);
+      Array.from(container.children).forEach((led, index) => {
+        led.classList.toggle("on", bits[index] === "1");
+      });
+    }
+
+    const leds = document.getElementById("leds");
+    buildLeds(leds);
+    const decimalInput = document.getElementById("decimalInput");
+    const binOut = document.getElementById("binOut");
+    const hexOut = document.getElementById("hexOut");
+
+    function updateConverter() {
+      const value = clampByte(decimalInput.value);
+      decimalInput.value = value;
+      binOut.textContent = toBin(value) + "b";
+      hexOut.textContent = toHex(value);
+      setLeds(leds, value);
+    }
+    decimalInput.addEventListener("input", updateConverter);
+    updateConverter();
+
+    document.querySelectorAll("[data-answer]").forEach(button => {
+      button.addEventListener("click", () => {
+        const target = document.getElementById(button.dataset.answer);
+        const check = button.dataset.check;
+        if (button.dataset.answer === "zahlenMini") {
+          target.innerHTML = check === "9"
+            ? "<span class='status-ok'>Richtig.</span> 8 + 1 = 9, also 00001001b."
+            : "<span class='status-bad'>Noch nicht.</span> P2.0 ist 1 und P2.3 ist 8. Zusammen ergibt das 9.";
+          return;
+        }
+        target.innerHTML = check === "right"
+          ? "<span class='status-ok'>Richtig.</span> Genau so kann man den Befehl lesen."
+          : "<span class='status-bad'>Noch nicht.</span> Lies den Befehl noch einmal von Ziel nach Quelle.";
+      });
+    });
+
+    const explanations = {
+      mov: "MOV ist der Kopierbefehl. `MOV P2, #1` schreibt den direkten Wert 1 an Port P2. Im Simulator waere damit nur P2.0 an.",
+      inc: "`INC R4` erhoeht das Register R4 um 1. Das ist wie `r4++` in Java, nur direkt auf einem CPU-Register.",
+      djnz: "`DJNZ R0, warte1` verringert R0 um 1. Wenn R0 danach nicht 0 ist, springt das Programm zu `warte1`.",
+      sjmp: "`SJMP main` ist ein unbedingter Sprung. Das Programm springt immer zur Marke `main`.",
+      jb: "`JB P2.7, rotateright` springt nur dann, wenn das Bit P2.7 den Wert 1 hat.",
+      jnb: "`JNB P3.2, ende` springt nur dann, wenn das Bit P3.2 den Wert 0 hat.",
+      rl: "`RL A` rotiert die Bits in A nach links. Aus 00000001b wird 00000010b, spaeter 00000100b.",
+      rr: "`RR A` rotiert die Bits in A nach rechts. Das rechte Bit wandert dabei wieder nach links.",
+      orl: "`ORL A, R1` verknuepft A und R1 bitweise mit ODER. Das ist praktisch, um Bitmuster zusammenzusetzen.",
+      add: "`ADD A, @R0` addiert den Wert aus dem RAM-Speicherplatz, auf den R0 zeigt, zum Akkumulator A.",
+      dec: "`DEC R4` verringert R4 um 1. Das Gegenstueck dazu ist `INC R4`.",
+      div: "`DIV AB` teilt A durch B. Der ganzzahlige Quotient steht danach in A, der Rest in B.",
+      setb: "`SETB P2.7` setzt ein einzelnes Bit auf 1. Bei P2.7 wuerde die linke LED eingeschaltet.",
+      clr: "`CLR TF0` setzt ein Bit auf 0. Das wird haeufig bei Timer- oder Interrupt-Flags benutzt.",
+      cpl: "`CPL EX1` kehrt ein Bit um. War es 1, wird es 0. War es 0, wird es 1.",
+      lcall: "`LCALL wait` ruft das Unterprogramm `wait` auf. Nach einem `RET` geht es hinter dem Aufruf weiter.",
+      ret: "`RET` beendet ein Unterprogramm. Die CPU kehrt zu der Stelle zurueck, an der `LCALL` aufgerufen wurde.",
+      org: "`ORG 000Bh` setzt die Programmadresse fuer die folgenden Befehle. Das ist vor allem fuer Interrupt-Beispiele wichtig.",
+      reti: "`RETI` beendet ein Interrupt-Unterprogramm. Fuer normale Unterprogramme verwendet man `RET`.",
+      cjne: "`CJNE R4, #16, main` bedeutet: Vergleiche R4 mit 16. Wenn ungleich, springe zu `main`.",
+      db: "`DB` legt Datenbytes ab. Diese Werte werden nicht als Befehle ausgefuehrt, sondern spaeter gelesen.",
+      movc: "`MOVC A, @A+DPTR` liest aus einer Tabelle im Programmspeicher. A ist dabei der Index, DPTR zeigt auf den Tabellenanfang.",
+      comment: "Ein Semikolon `;` startet einen Kommentar. Alles dahinter ist nur fuer Menschen und wird nicht ausgefuehrt."
+    };
+    const instructionSelect = document.getElementById("instructionSelect");
+    const instructionExplain = document.getElementById("instructionExplain");
+    instructionSelect.addEventListener("change", () => {
+      instructionExplain.textContent = explanations[instructionSelect.value];
+    });
+    instructionExplain.textContent = explanations.mov;
+
+    const demoProgram = [
+      { text: "MOV A, #1", run: s => { s.A = 1; return "A bekommt den direkten Wert 1."; } },
+      { text: "MOV P2, A", run: s => { s.P2 = s.A; return "Der Inhalt von A wird an Port P2 ausgegeben."; } },
+      { text: "RL A", run: s => { s.A = ((s.A << 1) | (s.A >> 7)) & 255; return "Die Bits in A rotieren nach links."; } },
+      { text: "MOV P2, A", run: s => { s.P2 = s.A; return "Jetzt sieht man die neue Position an den LEDs."; } },
+      { text: "RL A", run: s => { s.A = ((s.A << 1) | (s.A >> 7)) & 255; return "Noch einmal nach links."; } },
+      { text: "MOV P2, A", run: s => { s.P2 = s.A; return "Port P2 bekommt den neuen Wert."; } },
+      { text: "RR A", run: s => { s.A = ((s.A >> 1) | ((s.A & 1) << 7)) & 255; return "Nun rotiert A nach rechts."; } },
+      { text: "MOV P2, A", run: s => { s.P2 = s.A; return "Die Ausgabe wandert wieder zurueck."; } }
+    ];
+    let stepState = { A: 0, P2: 0, PC: 0, last: "-" };
+    const stepCode = document.getElementById("stepCode");
+    const stepExplain = document.getElementById("stepExplain");
+    const stepLeds = document.getElementById("stepLeds");
+    buildLeds(stepLeds);
+
+    function renderStep() {
+      stepCode.innerHTML = demoProgram.map((op, index) => {
+        const safe = op.text.replace(/</g, "&lt;");
+        return index === stepState.PC ? "<span class='active-line'>" + safe + "</span>" : safe;
+      }).join("\n");
+      document.getElementById("regA").textContent = toHex(stepState.A);
+      document.getElementById("regP2").textContent = toHex(stepState.P2);
+      document.getElementById("regPC").textContent = stepState.PC;
+      document.getElementById("lastOp").textContent = stepState.last;
+      setLeds(stepLeds, stepState.P2);
+    }
+
+    document.getElementById("stepBtn").addEventListener("click", () => {
+      const op = demoProgram[stepState.PC];
+      stepState.last = op.text;
+      stepExplain.textContent = op.run(stepState);
+      stepState.PC = (stepState.PC + 1) % demoProgram.length;
+      renderStep();
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      stepState = { A: 0, P2: 0, PC: 0, last: "-" };
+      stepExplain.textContent = "Starte mit dem ersten Schritt.";
+      renderStep();
+    });
+    renderStep();
+
+    const memoryGrid = document.getElementById("memoryGrid");
+    const p1Input = document.getElementById("p1Input");
+    let memory = Array(8).fill("--");
+    let pointer = 0;
+
+    function renderMemory() {
+      memoryGrid.innerHTML = "";
+      memory.forEach((value, index) => {
+        const cell = document.createElement("div");
+        cell.className = "mem-cell" + (index === pointer ? " active" : "");
+        cell.innerHTML = "<strong>" + (0x30 + index).toString(16).toUpperCase() + "h</strong><br>" + value;
+        memoryGrid.appendChild(cell);
+      });
+      document.getElementById("r0Pointer").textContent = (0x30 + pointer).toString(16).toUpperCase() + "h";
+    }
+
+    document.getElementById("storeBtn").addEventListener("click", () => {
+      memory[pointer] = toHex(p1Input.value);
+      pointer = (pointer + 1) % memory.length;
+      renderMemory();
+    });
+
+    document.getElementById("memResetBtn").addEventListener("click", () => {
+      memory = Array(8).fill("--");
+      pointer = 0;
+      renderMemory();
+    });
+    renderMemory();
+
+    const samples = {
+      "Lauflicht mit Stop": {
+        code: `begin:
+MOV P2, #1
+LCALL wait
+rotateleft:
+JB P2.7, rotateright
+MOV A, P2
+RL A
+MOV P2, A
+LCALL wait
+SJMP rotateleft`,
+        explain: "Gut zum Einstieg in Ports und Rotation: Ein einzelnes Bit wandert ueber P2. `JB P2.7` erkennt, ob das linke Ende erreicht ist."
+      },
+      "7-Segment mit DB": {
+        code: `MOV R4, #0
+main:
+MOV A, R4
+LCALL leseTabelle
+MOV P2, A
+INC R4
+CJNE R4, #16, main
+
+tabelle:
+DB 7Eh, 00010010b, 10111100b`,
+        explain: "Hier sieht man Tabellenarbeit: R4 ist der Zaehler, A wird zum Index, `DB` enthaelt die Bitmuster fuer die Anzeige."
+      },
+      "Zahlenspeicher": {
+        code: `MOV P2, #0
+MOV R0, #30h
+
+taster_eingabe:
+JNB P3.2, ende1
+MOV A, P1
+MOV @R0, A
+INC R0
+ende1:
+RET`,
+        explain: "Dieses Beispiel zeigt indirekte Adressierung. R0 zeigt auf eine RAM-Adresse, `@R0` meint den Speicherplatz an dieser Adresse."
+      },
+      "BCD": {
+        code: `MOV R0, #00000010b ;2
+MOV R1, #00000011b ;3
+
+MOV A, R0
+RL A
+RL A
+RL A
+RL A
+ORL A, R1
+MOV P2, A`,
+        explain: "Hier werden zwei 4-Bit-Werte in ein Byte gepackt. Viermal `RL A` schiebt die 2 in die obere Haelfte, `ORL` setzt die untere Haelfte dazu."
+      }
+    };
+
+    const sampleButtons = document.getElementById("sampleButtons");
+    const sampleTitle = document.getElementById("sampleTitle");
+    const sampleCode = document.getElementById("sampleCode");
+    const sampleExplain = document.getElementById("sampleExplain");
+
+    Object.keys(samples).forEach((name, index) => {
+      const button = document.createElement("button");
+      button.className = "button" + (index === 0 ? " primary" : "");
+      button.textContent = name;
+      button.addEventListener("click", () => selectSample(name, button));
+      sampleButtons.appendChild(button);
+    });
+
+    function selectSample(name, activeButton) {
+      Array.from(sampleButtons.children).forEach(button => button.classList.remove("primary"));
+      activeButton.classList.add("primary");
+      sampleTitle.textContent = name;
+      sampleCode.textContent = samples[name].code;
+      sampleExplain.textContent = samples[name].explain;
+    }
+
+    selectSample("Lauflicht mit Stop", sampleButtons.children[0]);
+  </script>
+</body>
+</html>
